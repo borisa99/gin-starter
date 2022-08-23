@@ -26,7 +26,7 @@ func GenerateToken(id string) (string, error) {
 	return tokenString, err
 }
 
-func VerifyToken(tokenString string) {
+func VerifyToken(tokenString string) (jwt.MapClaims, error) {
 	// Parse takes the token string and a function for looking up the key. The latter is especially
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
 	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
@@ -43,9 +43,9 @@ func VerifyToken(tokenString string) {
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println(claims["id"])
+		return claims, nil
 	} else {
-		fmt.Println(err)
+		return nil, err
 	}
 
 }
