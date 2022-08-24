@@ -12,12 +12,12 @@ import (
 // a key using crypto/rand or something equivalent. You need the same key for signing
 // and validating.
 
-func GenerateToken(id string) (string, error) {
+func GenerateToken(user_id string) (string, error) {
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":  id,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"user_id": user_id,
+		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
@@ -28,10 +28,10 @@ func GenerateToken(id string) (string, error) {
 	return tokenString, err
 }
 
-func VerifyToken(tokenString string) bool {
+func VerifyToken(tokenString string) (bool, string) {
 
 	if tokenString == "" {
-		return false
+		return false, ""
 	}
 	// Parse takes the token string and a function for looking up the key. The latter is especially
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
@@ -48,7 +48,23 @@ func VerifyToken(tokenString string) bool {
 	})
 
 	if err != nil {
-		return false
+		return false, ""
 	}
-	return token.Valid
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+		claimsString := make(map[string]string)
+		for key, value := range claims {
+			strKey := fmt.Sprintf("%v", key)
+			strValue := fmt.Sprintf("%v", value)
+
+			claimsString[strKey] = strValue
+		}
+
+		return true, claimsString["user_id"]
+	} else {
+		fmt.Println(err)
+	}
+
+	return token.Valid, ""
 }

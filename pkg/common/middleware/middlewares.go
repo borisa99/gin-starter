@@ -13,13 +13,14 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 
 		bearerToken := c.Request.Header.Get("Authorization")
 		formatedToken := strings.ReplaceAll(bearerToken, "Bearer ", "")
-		ok := token.VerifyToken(formatedToken)
+		ok, uId := token.VerifyToken(formatedToken)
 
 		if !ok {
 			c.String(http.StatusUnauthorized, "Unauthorized")
 			c.Abort()
 			return
 		}
+		c.Set("uId", uId)
 
 		c.Next()
 	}
