@@ -18,7 +18,7 @@ func (h authHandler) Login(c *gin.Context) {
 	var b LoginRequest
 
 	if err := c.ShouldBindJSON(&b); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
@@ -26,13 +26,13 @@ func (h authHandler) Login(c *gin.Context) {
 
 	// Find user in DB
 	if result := h.DB.Where(&models.User{Email: b.Email}).First(&u); result.Error != nil {
-		c.JSON(http.StatusNotFound, result.Error)
+		c.JSON(http.StatusNotFound, "user_not_found")
 		return
 	}
 
 	// Verify password hash
 	if err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(b.Password)); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, "invalid_credentials")
 		return
 	}
 

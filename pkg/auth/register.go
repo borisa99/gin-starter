@@ -20,7 +20,7 @@ func (h authHandler) Register(c *gin.Context) {
 	var b RegisterRequest
 
 	if err := c.ShouldBind(&b); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
@@ -38,7 +38,7 @@ func (h authHandler) Register(c *gin.Context) {
 	}
 
 	if result := h.DB.Create(&u); result.Error != nil {
-		c.JSON(http.StatusNotFound, result.Error.Error())
+		c.JSON(http.StatusBadRequest, "user_already_exists")
 		return
 	}
 
