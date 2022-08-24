@@ -28,7 +28,11 @@ func GenerateToken(id string) (string, error) {
 	return tokenString, err
 }
 
-func VerifyToken(tokenString string) (jwt.MapClaims, error) {
+func VerifyToken(tokenString string) bool {
+
+	if tokenString == "" {
+		return false
+	}
 	// Parse takes the token string and a function for looking up the key. The latter is especially
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
 	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
@@ -38,16 +42,13 @@ func VerifyToken(tokenString string) (jwt.MapClaims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		jwtSecret := viper.Get("JWT_SECRET").(string)
-
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		jwtSecret := viper.Get("JWT_SECRET").(string)
 		return []byte(jwtSecret), nil
 	})
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, nil
-	} else {
-		return nil, err
+	if err != nil {
+		return false
 	}
-
+	return token.Valid
 }

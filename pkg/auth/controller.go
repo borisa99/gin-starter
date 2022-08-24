@@ -9,12 +9,12 @@ type authHandler struct {
 	DB *gorm.DB
 }
 
-func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
+func RegisterRoutes(g *gin.RouterGroup, db *gorm.DB) {
 	h := &authHandler{
 		DB: db,
 	}
 
-	routes := r.Group("/auth")
+	routes := g.Group("/auth")
 
 	routes.POST("/register", h.Register)
 	routes.POST("/login", h.Login)

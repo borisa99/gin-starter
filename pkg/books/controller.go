@@ -9,12 +9,12 @@ type bookHandler struct {
 	DB *gorm.DB
 }
 
-func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
+func RegisterRoutes(g *gin.RouterGroup, db *gorm.DB) {
 	h := &bookHandler{
 		DB: db,
 	}
 
-	routes := r.Group("/books")
+	routes := g.Group("/books")
 
 	routes.GET("/:id", h.GetBook)
 	routes.GET("/", h.GetBooks)
