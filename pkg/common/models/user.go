@@ -6,4 +6,5 @@ type User struct {
 	LastName     string `gorm:"not null" json:"lastName"`
 	Email        string `gorm:"not null;unique" json:"email"`
 	PasswordHash string `gorm:"not null" json:"passwordHash"`
+	Roles        []UserRole
 }
