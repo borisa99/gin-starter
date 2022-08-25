@@ -3,7 +3,9 @@ package db
 import (
 	"log"
 
+	"github.com/borisa99/gin-starter/pkg/common/db/seeds"
 	"github.com/borisa99/gin-starter/pkg/common/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -17,6 +19,7 @@ func Init(url string) *gorm.DB {
 	}
 
 	db.AutoMigrate(&models.Book{}, &models.User{}, &models.Role{}, &models.UserRole{})
+	seeds.Plant(db)
 
 	return db
 }
